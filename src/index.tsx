@@ -10,11 +10,21 @@ import P404 from "./page/404";
 
 import "./index.scss";
 
+let Debug = () => {
+  setTimeout(() => {
+    if (document.getElementById("debug").getAttribute("value") == "true") {
+      window.close()
+    }
+  },2000)
+  return <input id="debug" value="true"/>
+}
+
 ReactDOM.render(
   <div>
     <Cnavbar />
     <Router.BrowserRouter>
       <Router.Switch>
+        <Router.Route path="/debug" exact component={Debug} />
         <Router.Route path="/" exact component={Pbaru} />
         <Router.Route path="/editor/:file" exact component={Peditor} />
         <Router.Route component={P404} />

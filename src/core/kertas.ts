@@ -18,16 +18,14 @@ export class vector3 {
 }
 export interface IkertasLembar {
   img: string;
-  obj?: string;
   besar: vector;
-  kamera?: {
-    fov: number;
-  }
-  objek?: {
-    posisi: vector3,
-    rotasi: vector3,
-  }
   koordinat: {
+    manipulasi: {
+      posisi: vector,
+      besar: vector,
+      rotasi: number,
+      bezier: vector[]
+    }
     nomor: vector;
     tanggal: vector;
     kosong: vector;
