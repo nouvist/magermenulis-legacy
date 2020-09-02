@@ -21,16 +21,21 @@ export interface IkertasLembar {
   besar: vector;
   koordinat: {
     manipulasi: {
-      posisi: vector,
-      besar: vector,
-      rotasi: number,
-      bezier: vector[]
-    }
+      posisi: vector;
+      besar: vector;
+      rotasi: number;
+      kurva: vector[];
+    };
+    besar: vector;
     nomor: vector;
     tanggal: vector;
     kosong: vector;
     konten: vector;
-    kontenBaris: number;
+    kontenNo1: vector;
+    kontenNo2: vector;
+    kontenMargin: number;
+    kontenBaris: number
+    kontenLebar: number;
     kontenSkala: number;
   };
 }
