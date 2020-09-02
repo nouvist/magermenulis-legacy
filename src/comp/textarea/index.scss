@@ -1,0 +1,12 @@
+@import "../../global.scss";
+
+.input {
+  background: #00000000;
+  border: $border;
+  color: #ffffff;
+  height: 48px;
+  border-radius: 2px;
+  padding: 24px;
+  transition-duration: 250ms;
+  transition-property: background-color;
+}

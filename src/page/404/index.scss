@@ -1,0 +1,23 @@
+@import "../../global.scss";
+
+.wadah {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+.teks {
+  margin: 8px 0;
+  font-size: 24px;
+font-weight: 300;
+}
+.emoji {
+  font-size: 64px;
+  letter-spacing: 8px;
+  color: #5F6368;
+}

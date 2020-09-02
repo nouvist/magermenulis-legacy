@@ -1,0 +1,52 @@
+export class vector {
+  x: number;
+  y: number;
+  constructor(x?: number, y?: number) {
+    this.x = x;
+    this.y = y;
+  }
+}
+export class vector3 {
+  x: number;
+  y: number;
+  z: number;
+  constructor(x?: number, y?: number, z?: number) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+  }
+}
+export interface IkertasLembar {
+  img: string;
+  obj?: string;
+  besar: vector;
+  kamera?: {
+    fov: number;
+  }
+  objek?: {
+    posisi: vector3,
+    rotasi: vector3,
+  }
+  koordinat: {
+    nomor: vector;
+    tanggal: vector;
+    kosong: vector;
+    konten: vector;
+    kontenBaris: number;
+    kontenSkala: number;
+  };
+}
+export interface Ikertas {
+  pembuat?: {
+    nama?: string;
+    ig?: string;
+  };
+  kiri: {
+    ada: boolean;
+    isi?: IkertasLembar[];
+  };
+  kanan: {
+    ada: boolean;
+    isi?: IkertasLembar[];
+  };
+}
