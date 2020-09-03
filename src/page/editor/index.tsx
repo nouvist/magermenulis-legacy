@@ -54,8 +54,9 @@ class _ extends React.Component<RouteChildrenProps<Iprops>, Istate> {
       no: this.state.dataNo,
       tgl: this.state.dataTgl,
     };
-    let gambar = await this.mager.pratinjau(data);
-    this.setState({ pratinjau: gambar.toDataURL() });
+    let gambar = await this.mager.gaskan(data);
+    
+    this.setState({ pratinjau: gambar[0].toDataURL() });
   }
   async unduh() {
     let data: Idata = {

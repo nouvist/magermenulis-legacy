@@ -28,11 +28,6 @@ export class magerMenulis {
     this.kertas = kertas;
     this.font = font;
   }
-
-  async pratinjau(data: Idata): Promise<HTMLCanvasElement> {
-    return await this.gambar(data);
-  }
-
   async gaskan(data: Idata): Promise<HTMLCanvasElement[]> {
     this.skrng.jenis = data.dariKiri ? "kiri" : "kanan";
     this.skrng.pos.kiri = 0;
@@ -40,6 +35,7 @@ export class magerMenulis {
     let result = await this.gambarTeks(data);
     return result;
   }
+
   async gambarTeks(data: Idata) {
     let hasilnya: HTMLCanvasElement[] = [];
     // ternyata satu jenis
@@ -54,17 +50,24 @@ export class magerMenulis {
     let kertas = this.kertas[this.skrng.jenis].isi[
       this.skrng.pos[this.skrng.jenis]
     ];
-    let tCanvas = document.createElement("canvas");
-    tCanvas.width = kertas.koordinat.besar.x;
-    tCanvas.height = kertas.koordinat.besar.y;
-    let tCtx = tCanvas.getContext("2d");
-    tCtx.fillStyle = "black";
-    tCtx.font = "24px 'Gloria Hallelujah'";
+    function siapinCanvas() {
+      let tCanvas = document.createElement("canvas");
+      tCanvas.width = kertas.koordinat.besar.x;
+      tCanvas.height = kertas.koordinat.besar.y;
+      return tCanvas;
+    }
+    function siapinContext() {
+      let tCtx = tCanvas.getContext("2d");
+      tCtx.fillStyle = "black";
+      tCtx.font = "24px 'Gloria Hallelujah'";
+      return tCtx;
+    }
+    let tCanvas = siapinCanvas();
+    let tCtx = siapinContext();
     function wrapText(teks) {
       let ttKata = teks.split(" ");
       let ttBaris: string[] = [];
       let ttSkrng = "";
-
       ttKata.forEach((val) => {
         let { width } = tCtx.measureText(ttSkrng + val + " ");
         if (width < kertas.koordinat.kontenLebar) {
@@ -79,22 +82,18 @@ export class magerMenulis {
     }
     let i = 0;
     let tEol = data.konten.split("\n");
+    let mustBreak = false;
     for (let el of tEol) {
       let wrap = wrapText(el);
-      console.log(wrap);
       for (let el2 of wrap) {
         if (i >= kertas.koordinat.kontenJumlah) {
           let tHasil = await this.imgLoader(tCanvas.toDataURL());
-          hasilnya.unshift(await this.gambarManipulasi(data, tHasil, kertas));
+          hasilnya.push(await this.gambarManipulasi(data, tHasil, kertas));
           i = 0;
           this.skrng.pos[this.skrng.jenis]++;
           this.skrng.jenis = this.skrng.jenis == "kiri" ? "kanan" : "kiri";
-          tCanvas = document.createElement("canvas");
-          tCanvas.width = kertas.koordinat.besar.x;
-          tCanvas.height = kertas.koordinat.besar.y;
-          tCtx = tCanvas.getContext("2d");
-          tCtx.fillStyle = "black";
-          tCtx.font = "24px 'Gloria Hallelujah'";
+          tCanvas = siapinCanvas();
+          tCtx = siapinContext();
         }
         tCtx.fillText(
           el2,
@@ -105,15 +104,10 @@ export class magerMenulis {
       }
     }
     let tHasil = await this.imgLoader(tCanvas.toDataURL());
-    hasilnya.unshift(await this.gambarManipulasi(data, tHasil, kertas));
-    tCanvas = document.createElement("canvas");
-    tCanvas.width = kertas.koordinat.besar.x;
-    tCanvas.height = kertas.koordinat.besar.y;
-    tCtx = tCanvas.getContext("2d");
-    tCtx.fillStyle = "black";
-    tCtx.font = "24px 'Gloria Hallelujah'";
-    tCtx.fillText(data.no, kertas.koordinat.nomor.x, kertas.koordinat.nomor.y);
+    hasilnya.push(await this.gambarManipulasi(data, tHasil, kertas));
+    tCanvas = siapinCanvas();
 
+    tCtx.fillText(data.no, kertas.koordinat.nomor.x, kertas.koordinat.nomor.y);
     tCtx.fillText(
       data.tgl,
       kertas.koordinat.tanggal.x,
@@ -133,8 +127,6 @@ export class magerMenulis {
   ): Promise<HTMLCanvasElement> {
     // *latar
     let bg = await this.imgLoader(kertas.img);
-    // *teks
-
     // *manipulasi
     let mCanvas = document.createElement("canvas");
     mCanvas.width = kertas.besar.x;
@@ -148,7 +140,6 @@ export class magerMenulis {
       let sY = 0;
       let sW = 1;
       let sH = tHasil.height;
-
       let kurva = this.bezier(
         sX / tHasil.width,
         kertas.koordinat.manipulasi.kurva[0],
@@ -156,7 +147,6 @@ export class magerMenulis {
         kertas.koordinat.manipulasi.kurva[2],
         kertas.koordinat.manipulasi.kurva[3]
       );
-
       let dX = (sX * kertas.koordinat.manipulasi.besar.x) / tHasil.width;
       dX += kertas.koordinat.manipulasi.posisi.x;
       let dY = kertas.koordinat.manipulasi.posisi.y;
@@ -180,7 +170,7 @@ export class magerMenulis {
   }
   imgLoader(url: string): Promise<HTMLImageElement> {
     let img = new Image();
-    return new Promise((res, rej) => {
+    return new Promise((res) => {
       img.onload = () => res(img);
       img.src = url;
     });
