@@ -14,6 +14,7 @@
     "@types/react-dom": "^16.9.8",
     "@types/react-router-dom": "^5.1.5",
     "parcel-bundler": "^1.12.4",
+    "parcel-plugin-obfuscate": "^1.0.0",
     "postcss-modules": "^3.2.2",
     "sass": "^1.26.10",
     "typescript": "^4.0.2",

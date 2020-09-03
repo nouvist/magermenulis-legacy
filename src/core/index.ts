@@ -82,9 +82,9 @@ export class magerMenulis {
     }
     let i = 0;
     let tEol = data.konten.split("\n");
-    let mustBreak = false;
     for (let el of tEol) {
       let wrap = wrapText(el);
+      let newline = true;
       for (let el2 of wrap) {
         if (i >= kertas.koordinat.kontenJumlah) {
           let tHasil = await this.imgLoader(tCanvas.toDataURL());
@@ -95,11 +95,34 @@ export class magerMenulis {
           tCanvas = siapinCanvas();
           tCtx = siapinContext();
         }
+        if (newline) {
+          if (el2.substr(0, 1) == "[" && el2.indexOf("]") != -1) {
+            let nomor = el2.substr(1, el2.indexOf("]") - 1);
+            el2 = el2.substr(el2.indexOf("]") + 1);
+            el2 = el2.trimLeft();
+            tCtx.fillText(
+              nomor,
+              kertas.koordinat.kontenNo1.x,
+              kertas.koordinat.kontenNo1.y + i * kertas.koordinat.kontenMargin
+            );
+          }
+          if (el2.substr(0, 1) == "<" && el2.indexOf(">") != -1) {
+            let nomor = el2.substr(1, el2.indexOf(">") - 1);
+            el2 = el2.substr(el2.indexOf(">") + 1);
+            el2 = el2.trimLeft();
+            tCtx.fillText(
+              nomor,
+              kertas.koordinat.kontenNo2.x,
+              kertas.koordinat.kontenNo2.y + i * kertas.koordinat.kontenMargin
+            );
+          }
+        }
         tCtx.fillText(
           el2,
           kertas.koordinat.konten.x,
           kertas.koordinat.konten.y + i * kertas.koordinat.kontenMargin
         );
+        newline = false;
         i++;
       }
     }
