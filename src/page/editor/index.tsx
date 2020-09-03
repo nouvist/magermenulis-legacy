@@ -67,6 +67,7 @@ class _ extends React.Component<RouteChildrenProps<Iprops>, Istate> {
     };
     let gambar = await this.mager.gaskan(data);
     console.log(gambar);
+    
     gambar.forEach((el) => {
       el.toBlob((blob) => {
         let url = URL.createObjectURL(blob);

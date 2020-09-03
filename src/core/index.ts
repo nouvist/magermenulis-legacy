@@ -1,4 +1,4 @@
-import { Ikertas, vector } from "./kertas";
+import { Ikertas, vector, IkertasLembar } from "./kertas";
 import { Ifont } from "./font";
 
 export interface Idata {
@@ -13,8 +13,17 @@ export class magerMenulis {
   font: Ifont;
   skrng: {
     jenis: "kiri" | "kanan";
-    pos: number;
-  } = { jenis: "kiri", pos: 0 };
+    pos: {
+      kiri: 0;
+      kanan: 0;
+    };
+  } = {
+    jenis: "kiri",
+    pos: {
+      kiri: 0,
+      kanan: 0,
+    },
+  };
   constructor(kertas?: Ikertas, font?: Ifont) {
     this.kertas = kertas;
     this.font = font;
@@ -25,26 +34,32 @@ export class magerMenulis {
   }
 
   async gaskan(data: Idata): Promise<HTMLCanvasElement[]> {
-    let result = await Promise.all([this.gambar(data)]);
+    this.skrng.jenis = data.dariKiri ? "kiri" : "kanan";
+    this.skrng.pos.kiri = 0;
+    this.skrng.pos.kanan = 0;
+    let result = await this.gambarTeks(data);
     return result;
   }
-  async gambar(data: Idata): Promise<HTMLCanvasElement> {
-    // ngecek 1 jenis
-    if (!this.kertas[this.skrng.jenis].ada) {
+  async gambarTeks(data: Idata) {
+    let hasilnya: HTMLCanvasElement[] = [];
+    // ternyata satu jenis
+    if (!this.kertas[this.skrng.jenis])
       this.skrng.jenis = this.skrng.jenis == "kiri" ? "kanan" : "kiri";
-      return;
-    }
-    // *latar
-    let kertas = this.kertas[this.skrng.jenis].isi[this.skrng.pos];
-    let bg = await this.imgLoader(kertas.img);
-    // *teks
+    if (
+      this.skrng.pos[this.skrng.jenis] >=
+      this.kertas[this.skrng.jenis].isi.length
+    )
+      this.skrng.pos[this.skrng.jenis] = 0;
+
+    let kertas = this.kertas[this.skrng.jenis].isi[
+      this.skrng.pos[this.skrng.jenis]
+    ];
     let tCanvas = document.createElement("canvas");
     tCanvas.width = kertas.koordinat.besar.x;
     tCanvas.height = kertas.koordinat.besar.y;
     let tCtx = tCanvas.getContext("2d");
     tCtx.fillStyle = "black";
     tCtx.font = "24px 'Gloria Hallelujah'";
-
     function wrapText(teks) {
       let ttKata = teks.split(" ");
       let ttBaris: string[] = [];
@@ -62,22 +77,43 @@ export class magerMenulis {
       ttBaris.push(ttSkrng);
       return ttBaris;
     }
-
     let i = 0;
-    data.konten.split("\n").forEach((el) => {
+    let tEol = data.konten.split("\n");
+    for (let el of tEol) {
       let wrap = wrapText(el);
       console.log(wrap);
-      wrap.forEach((el2) => {
+      for (let el2 of wrap) {
+        if (i >= kertas.koordinat.kontenJumlah) {
+          let tHasil = await this.imgLoader(tCanvas.toDataURL());
+          hasilnya.unshift(await this.gambarManipulasi(data, tHasil, kertas));
+          i = 0;
+          this.skrng.pos[this.skrng.jenis]++;
+          this.skrng.jenis = this.skrng.jenis == "kiri" ? "kanan" : "kiri";
+          tCanvas = document.createElement("canvas");
+          tCanvas.width = kertas.koordinat.besar.x;
+          tCanvas.height = kertas.koordinat.besar.y;
+          tCtx = tCanvas.getContext("2d");
+          tCtx.fillStyle = "black";
+          tCtx.font = "24px 'Gloria Hallelujah'";
+        }
         tCtx.fillText(
           el2,
           kertas.koordinat.konten.x,
           kertas.koordinat.konten.y + i * kertas.koordinat.kontenMargin
         );
         i++;
-      });
-    });
-
+      }
+    }
+    let tHasil = await this.imgLoader(tCanvas.toDataURL());
+    hasilnya.unshift(await this.gambarManipulasi(data, tHasil, kertas));
+    tCanvas = document.createElement("canvas");
+    tCanvas.width = kertas.koordinat.besar.x;
+    tCanvas.height = kertas.koordinat.besar.y;
+    tCtx = tCanvas.getContext("2d");
+    tCtx.fillStyle = "black";
+    tCtx.font = "24px 'Gloria Hallelujah'";
     tCtx.fillText(data.no, kertas.koordinat.nomor.x, kertas.koordinat.nomor.y);
+
     tCtx.fillText(
       data.tgl,
       kertas.koordinat.tanggal.x,
@@ -88,7 +124,17 @@ export class magerMenulis {
       kertas.koordinat.kosong.x,
       kertas.koordinat.kosong.y
     );
-    let tHasil = await this.imgLoader(tCanvas.toDataURL());
+    return hasilnya;
+  }
+  async gambarManipulasi(
+    data: Idata,
+    tHasil: HTMLImageElement,
+    kertas: IkertasLembar
+  ): Promise<HTMLCanvasElement> {
+    // *latar
+    let bg = await this.imgLoader(kertas.img);
+    // *teks
+
     // *manipulasi
     let mCanvas = document.createElement("canvas");
     mCanvas.width = kertas.besar.x;
