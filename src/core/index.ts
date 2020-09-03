@@ -1,4 +1,5 @@
 import { Ikertas, vector } from "./kertas";
+import { Ifont } from "./font";
 
 export interface Idata {
   no: string;
@@ -9,26 +10,25 @@ export interface Idata {
 }
 export class magerMenulis {
   kertas: Ikertas;
+  font: Ifont;
   skrng: {
     jenis: "kiri" | "kanan";
     pos: number;
   } = { jenis: "kiri", pos: 0 };
-  data: Idata;
-  debug: Window;
-  constructor(kertas?: Ikertas, data?: Idata, debug?: boolean) {
+  constructor(kertas?: Ikertas, font?: Ifont) {
     this.kertas = kertas;
-    this.data = data;
-    if (debug) {
-      this.debug = window.open("/debug");
-      setTimeout(() => {
-        this.debug.document.body.innerHTML = "";
-        this.debug.document.querySelector("meta[name=viewport]").remove();
-        this.gambar();
-      }, 500);
-    }
+    this.font = font;
   }
 
-  async gambar(pratinjau: boolean = false) {
+  async pratinjau(data: Idata): Promise<HTMLCanvasElement> {
+    return await this.gambar(data);
+  }
+
+  async gaskan(data: Idata): Promise<HTMLCanvasElement[]> {
+    let result = await Promise.all([this.gambar(data)]);
+    return result;
+  }
+  async gambar(data: Idata): Promise<HTMLCanvasElement> {
     // ngecek 1 jenis
     if (!this.kertas[this.skrng.jenis].ada) {
       this.skrng.jenis = this.skrng.jenis == "kiri" ? "kanan" : "kiri";
@@ -44,30 +44,51 @@ export class magerMenulis {
     let tCtx = tCanvas.getContext("2d");
     tCtx.fillStyle = "black";
     tCtx.font = "24px 'Gloria Hallelujah'";
+
+    function wrapText(teks) {
+      let ttKata = teks.split(" ");
+      let ttBaris: string[] = [];
+      let ttSkrng = "";
+
+      ttKata.forEach((val) => {
+        let { width } = tCtx.measureText(ttSkrng + val + " ");
+        if (width < kertas.koordinat.kontenLebar) {
+          ttSkrng += val + " ";
+        } else {
+          ttBaris.push(ttSkrng);
+          ttSkrng = val + " ";
+        }
+      });
+      ttBaris.push(ttSkrng);
+      return ttBaris;
+    }
+
+    let i = 0;
+    data.konten.split("\n").forEach((el) => {
+      let wrap = wrapText(el);
+      console.log(wrap);
+      wrap.forEach((el2) => {
+        tCtx.fillText(
+          el2,
+          kertas.koordinat.konten.x,
+          kertas.koordinat.konten.y + i * kertas.koordinat.kontenMargin
+        );
+        i++;
+      });
+    });
+
+    tCtx.fillText(data.no, kertas.koordinat.nomor.x, kertas.koordinat.nomor.y);
     tCtx.fillText(
-      "tes tulisan melengkung. aku nyontek kode orang. aku gangerti kurva soalnya",
-      kertas.koordinat.konten.x,
-      kertas.koordinat.konten.y
-    );
-    tCtx.fillText("9090", kertas.koordinat.nomor.x, kertas.koordinat.nomor.y);
-    tCtx.fillText(
-      "2020/09/02",
+      data.tgl,
       kertas.koordinat.tanggal.x,
       kertas.koordinat.tanggal.y
     );
     tCtx.fillText(
-      "Nouvistiardi (XI MIPA 4)",
+      data.kosong,
       kertas.koordinat.kosong.x,
       kertas.koordinat.kosong.y
     );
     let tHasil = await this.imgLoader(tCanvas.toDataURL());
-    // let tHasil = await this.imgLoader(
-    //   "https://manula.r.sizr.io/large/user/12518/img/grid.png"
-    // );
-    // let tHasil = await this.imgLoader(
-    //   "https://cdn2.unrealengine.com/Diesel%2Fproductv2%2Fgrand-theft-auto-v%2Fhome%2FGTAV_EGS_Artwork_1280x720_V04-1280x720-31e7e0e50fda38709553f5313027ba5b76bd10b6.jpg"
-    // );
-    // this.debug.document.body.appendChild(tHasil)
     // *manipulasi
     let mCanvas = document.createElement("canvas");
     mCanvas.width = kertas.besar.x;
@@ -98,7 +119,7 @@ export class magerMenulis {
       let dH = kertas.koordinat.manipulasi.besar.y + kurva.y;
       mCtx.drawImage(tHasil, sX, sY, sW, sH, dX, dY, dW, dH);
     }
-    if (this.debug) this.debug.document.body.appendChild(mCanvas);
+    return mCanvas;
   }
   bezier(t: number, p0: vector, p1: vector, p2: vector, p3: vector) {
     let cX = 3 * (p1.x - p0.x),

@@ -33,6 +33,7 @@ export interface IkertasLembar {
     konten: vector;
     kontenNo1: vector;
     kontenNo2: vector;
+    kontenJumlah: number;
     kontenMargin: number;
     kontenBaris: number
     kontenLebar: number;

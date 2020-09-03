@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as style from "./index.scss";
 import { withRouter, RouteChildrenProps } from "react-router-dom";
-import { magerMenulis } from "../../core";
+import { magerMenulis, Idata } from "../../core";
 import Cbutton from "../../comp/button";
 import Cinput from "../../comp/input";
 import Ccheckbox from "../../comp/checkbox";
@@ -32,6 +32,7 @@ class _ extends React.Component<RouteChildrenProps<Iprops>, Istate> {
   constructor(props) {
     super(props);
     this.pratinjau = this.pratinjau.bind(this);
+    this.unduh = this.unduh.bind(this);
     this.ubahState = this.ubahState.bind(this);
     this.ubahStateCheck = this.ubahStateCheck.bind(this);
   }
@@ -45,7 +46,34 @@ class _ extends React.Component<RouteChildrenProps<Iprops>, Istate> {
     d[e.currentTarget.name] = e.currentTarget.checked;
     this.setState(d);
   }
-  pratinjau() {}
+  async pratinjau() {
+    let data: Idata = {
+      dariKiri: this.state.dariKiri,
+      konten: this.state.dataKonten,
+      kosong: this.state.dataKsng,
+      no: this.state.dataNo,
+      tgl: this.state.dataTgl,
+    };
+    let gambar = await this.mager.pratinjau(data);
+    this.setState({ pratinjau: gambar.toDataURL() });
+  }
+  async unduh() {
+    let data: Idata = {
+      dariKiri: this.state.dariKiri,
+      konten: this.state.dataKonten,
+      kosong: this.state.dataKsng,
+      no: this.state.dataNo,
+      tgl: this.state.dataTgl,
+    };
+    let gambar = await this.mager.gaskan(data);
+    console.log(gambar);
+    gambar.forEach((el) => {
+      el.toBlob((blob) => {
+        let url = URL.createObjectURL(blob);
+        window.open(url);
+      });
+    });
+  }
   render() {
     return (
       <div className={style.wadah}>
@@ -55,7 +83,7 @@ class _ extends React.Component<RouteChildrenProps<Iprops>, Istate> {
               <h1>Pratinjau</h1>
               <div className={style.tombolPratinjau}>
                 <Cbutton onClick={this.pratinjau}>Pratinjau</Cbutton>
-                <Cbutton>Unduh</Cbutton>
+                <Cbutton onClick={this.unduh}>Unduh</Cbutton>
                 <div
                   style={{
                     backgroundImage: `url(${this.state.pratinjau})`,
