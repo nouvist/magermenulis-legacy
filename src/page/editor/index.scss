@@ -11,23 +11,29 @@
   > h1 {
     margin-top: 0;
   }
-}
-.tombolPratinjau {
-  > button {
-    margin-right: 8px;
+  .pratinjau {
+    height: 500px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+  .tombolPratinjau {
+    > button {
+      margin-right: 8px;
+    }
   }
 }
 .wadahEditor {
   padding: 12px;
-  > div > div  {
+  > div > div {
     margin: 8px 0;
   }
-}
-.input {
-  width: 100%;
-}
-.textarea {
-  width: 100%;
-  min-height: 128px;
-  resize: vertical;
+  .input {
+    width: 100%;
+  }
+  .textarea {
+    width: 100%;
+    min-height: 128px;
+    resize: vertical;
+  }
 }

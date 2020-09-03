@@ -1,0 +1,23 @@
+@import "../../global.scss";
+
+.wadah {
+  display: flex;
+  user-select: none;
+  align-items: center;
+  cursor: pointer;
+}
+.input {
+  display: none;
+  &:checked + .tombol {
+    display: none;
+  }
+  &:checked + .tombol + .tombol2 {
+    display: inline;
+  }
+}
+.teks {
+  margin-left: 4px;
+}
+.tombol2 {
+  display: none;
+}

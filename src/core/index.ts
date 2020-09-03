@@ -5,6 +5,7 @@ export interface Idata {
   tgl: string;
   kosong: string;
   konten: string;
+  dariKiri: boolean;
 }
 export class magerMenulis {
   kertas: Ikertas;
@@ -21,14 +22,13 @@ export class magerMenulis {
       this.debug = window.open("/debug");
       setTimeout(() => {
         this.debug.document.body.innerHTML = "";
+        this.debug.document.querySelector("meta[name=viewport]").remove();
         this.gambar();
       }, 500);
-    } else {
-      this.gambar();
     }
   }
 
-  async gambar() {
+  async gambar(pratinjau: boolean = false) {
     // ngecek 1 jenis
     if (!this.kertas[this.skrng.jenis].ada) {
       this.skrng.jenis = this.skrng.jenis == "kiri" ? "kanan" : "kiri";
@@ -42,27 +42,23 @@ export class magerMenulis {
     tCanvas.width = kertas.koordinat.besar.x;
     tCanvas.height = kertas.koordinat.besar.y;
     let tCtx = tCanvas.getContext("2d");
-    tCtx.fillStyle = "blaxk";
+    tCtx.fillStyle = "black";
     tCtx.font = "24px 'Gloria Hallelujah'";
     tCtx.fillText(
       "tes tulisan melengkung. aku nyontek kode orang. aku gangerti kurva soalnya",
       kertas.koordinat.konten.x,
-      kertas.koordinat.konten.y,
+      kertas.koordinat.konten.y
     );
-    tCtx.fillText(
-      "9090",
-      kertas.koordinat.nomor.x,
-      kertas.koordinat.nomor.y,
-    );
+    tCtx.fillText("9090", kertas.koordinat.nomor.x, kertas.koordinat.nomor.y);
     tCtx.fillText(
       "2020/09/02",
       kertas.koordinat.tanggal.x,
-      kertas.koordinat.tanggal.y,
+      kertas.koordinat.tanggal.y
     );
     tCtx.fillText(
       "Nouvistiardi (XI MIPA 4)",
       kertas.koordinat.kosong.x,
-      kertas.koordinat.kosong.y,
+      kertas.koordinat.kosong.y
     );
     let tHasil = await this.imgLoader(tCanvas.toDataURL());
     // let tHasil = await this.imgLoader(
@@ -102,7 +98,7 @@ export class magerMenulis {
       let dH = kertas.koordinat.manipulasi.besar.y + kurva.y;
       mCtx.drawImage(tHasil, sX, sY, sW, sH, dX, dY, dW, dH);
     }
-    this.debug.document.body.appendChild(mCanvas);
+    if (this.debug) this.debug.document.body.appendChild(mCanvas);
   }
   bezier(t: number, p0: vector, p1: vector, p2: vector, p3: vector) {
     let cX = 3 * (p1.x - p0.x),
