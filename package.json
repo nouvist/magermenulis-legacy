@@ -1,7 +1,7 @@
 {
   "scripts": {
-    "start": "rm -rf dist && parcel ./src/index.html --no-autoinstall",
-    "build": "rm -rf dist && parcel build ./src/index.html --no-source-maps",
+    "start": "rm -rf dist && rm -rf .cache && parcel ./src/index.html --no-autoinstall",
+    "build": "rm -rf dist && rm -rf .cache && parcel build ./src/index.html --no-source-maps",
     "postbuild": "workbox generateSW"
   },
   "dependencies": {

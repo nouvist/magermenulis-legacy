@@ -14,8 +14,8 @@ export class magerMenulis {
   skrng: {
     jenis: "kiri" | "kanan";
     pos: {
-      kiri: 0;
-      kanan: 0;
+      kiri: number;
+      kanan: number;
     };
   } = {
     jenis: "kiri",
@@ -64,6 +64,17 @@ export class magerMenulis {
     }
     let tCanvas = siapinCanvas();
     let tCtx = siapinContext();
+    tCtx.fillText(data.no, kertas.koordinat.nomor.x, kertas.koordinat.nomor.y);
+    tCtx.fillText(
+      data.tgl,
+      kertas.koordinat.tanggal.x,
+      kertas.koordinat.tanggal.y
+    );
+    tCtx.fillText(
+      data.kosong,
+      kertas.koordinat.kosong.x,
+      kertas.koordinat.kosong.y
+    );
     function wrapText(teks) {
       let ttKata = teks.split(" ");
       let ttBaris: string[] = [];
@@ -92,10 +103,19 @@ export class magerMenulis {
           i = 0;
           this.skrng.pos[this.skrng.jenis]++;
           this.skrng.jenis = this.skrng.jenis == "kiri" ? "kanan" : "kiri";
+          if (
+            this.skrng.pos[this.skrng.jenis] >=
+            this.kertas[this.skrng.jenis].isi.length
+          )
+            this.skrng.pos[this.skrng.jenis] = 0;
+          kertas = this.kertas[this.skrng.jenis].isi[
+            this.skrng.pos[this.skrng.jenis]
+          ];
           tCanvas = siapinCanvas();
           tCtx = siapinContext();
         }
         if (newline) {
+          console.log(this.skrng);
           if (el2.substr(0, 1) == "[" && el2.indexOf("]") != -1) {
             let nomor = el2.substr(1, el2.indexOf("]") - 1);
             el2 = el2.substr(el2.indexOf("]") + 1);
@@ -128,19 +148,6 @@ export class magerMenulis {
     }
     let tHasil = await this.imgLoader(tCanvas.toDataURL());
     hasilnya.push(await this.gambarManipulasi(data, tHasil, kertas));
-    tCanvas = siapinCanvas();
-
-    tCtx.fillText(data.no, kertas.koordinat.nomor.x, kertas.koordinat.nomor.y);
-    tCtx.fillText(
-      data.tgl,
-      kertas.koordinat.tanggal.x,
-      kertas.koordinat.tanggal.y
-    );
-    tCtx.fillText(
-      data.kosong,
-      kertas.koordinat.kosong.x,
-      kertas.koordinat.kosong.y
-    );
     return hasilnya;
   }
   async gambarManipulasi(

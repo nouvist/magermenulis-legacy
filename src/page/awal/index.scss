@@ -12,7 +12,8 @@
   @media (max-width: 720px) {
     flex-direction: column;
   }
-  > button {
+  > a {
+    text-decoration: none;
     width: 128px;
     height: 128px;
     display: flex;

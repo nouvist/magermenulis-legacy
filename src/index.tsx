@@ -4,7 +4,7 @@ import * as Router from "react-router-dom";
 
 import Cnavbar from "./comp/navbar";
 
-import Pbaru from "./page/baru";
+import Pawal from "./page/awal";
 import Peditor from "./page/editor";
 import P404 from "./page/404";
 
@@ -25,7 +25,7 @@ ReactDOM.render(
     <Router.BrowserRouter>
       <Router.Switch>
         <Router.Route path="/debug" exact component={Debug} />
-        <Router.Route path="/" exact component={Pbaru} />
+        <Router.Route path="/" exact component={Pawal} />
         <Router.Route path="/editor/:file" exact component={Peditor} />
         <Router.Route component={P404} />
       </Router.Switch>

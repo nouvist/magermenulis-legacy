@@ -1,6 +1,6 @@
 {
-  "short_name": "Mager Menulis",
-  "name": "Mager Menulis [BETA]",
+  "short_name": "MagerMenulis",
+  "name": "MagerMenulis",
   "icons": [
     {
       "src": "./icon/144.png",
@@ -9,14 +9,13 @@
       "purpose": "maskable"
     },
     {
-      "src": "./icon/1024.svg",
-      "type": "image/svg",
-      "sizes": "1024x1024",
-      "purpose": "maskable"
+      "src": "./icon/512.png",
+      "type": "image/png",
+      "sizes": "512x512"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
   "theme_color": "#0d0d0d",
-  "background_color": "#000000"
+  "background_color": "#1A73E8"
 }
