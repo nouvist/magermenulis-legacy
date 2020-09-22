@@ -24,6 +24,7 @@ export class magerMenulis {
       kanan: 0,
     },
   };
+  debug = false;
   constructor(kertas?: Ikertas, font?: Ifont) {
     this.kertas = kertas;
     this.font = font;
@@ -56,8 +57,13 @@ export class magerMenulis {
       tCanvas.height = kertas.koordinat.besar.y;
       return tCanvas;
     }
+    let debug = this.debug;
     function siapinContext() {
       let tCtx = tCanvas.getContext("2d");
+      if (debug) {
+        tCtx.fillStyle = "rgba(255,0,0,0.5)";
+        tCtx.fillRect(0, 0, tCanvas.width, tCanvas.height);
+      }
       tCtx.fillStyle = "black";
       tCtx.font = "24px 'Gloria Hallelujah'";
       return tCtx;

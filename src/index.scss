@@ -1,3 +1,5 @@
+@import "./global.scss";
+
 html {
   overflow-x: hidden;
 }
@@ -6,6 +8,9 @@ body {
   color: #ffffff;
   font-family: "Roboto";
   font-size: 14px;
+}
+a {
+  text-decoration: none;
 }
 * {
   box-sizing: border-box;
